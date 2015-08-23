@@ -2,8 +2,79 @@
 <?php
 
 /*
-http://docs.octoprint.org/en/master/api/job.html#retrieve-information-about-the-current-job
-http://192.168.0.105:5000/api/printer?history=true&limit=2&apikey=951657F1F5F34B23AF6419B3C3E75192
-http://192.168.0.105:5000/api/job?apikey=951657F1F5F34B23AF6419B3C3E75192
-
+ * Documentation:
+ * http://docs.octoprint.org/en/master/api/job.html#retrieve-information-about-the-current-job
 */
+
+/**
+ * @param String $url
+ */
+function doApiRequest($requestUrl) {
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $requestUrl);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+	$output = curl_exec($ch);
+	if ($output === false) {
+		die(curl_error($ch) . PHP_EOL);
+	}
+	curl_close($ch);
+	return $output;
+}
+
+/**
+ * @param String $url
+ * @param String $apiKey
+ */
+function getPrinterStatus($url, $apiKey) {
+
+	$requestUrl = $url . 'api/printer?history=true&limit=1&apikey=' . $apiKey;
+	$response = doApiRequest($requestUrl);
+	return json_decode($response);
+}
+
+/**
+ * @see http://docs.octoprint.org/en/master/api/job.html#retrieve-information-about-the-current-job
+ * @param String $url
+ * @param String $apiKey
+ */
+function getPrinterProgress($url, $apiKey) {
+
+	$requestUrl = $url . 'api/job?apikey=' . $apiKey;
+	$response = doApiRequest($requestUrl);
+	return json_decode($response);
+}
+
+
+
+
+$longOps = array('url:', 'apikey:');
+$options = getopt('', $longOps);
+
+if (count($options) < 2) {
+	die('usage octoprint-status.php apikey=XXXXX url=YYYY' . PHP_EOL);
+}
+if (false === function_exists('curl_init')) {
+	die('php5-curl is required by this script and not installed');
+}
+
+
+$url = $options['url'];
+$apiKey = $options['apikey'];
+
+$progressObject = getPrinterProgress($url, $apiKey);
+$printerStatusObject = getPrinterStatus($url, $apiKey);
+
+
+//var_dump($progressObject);
+//var_dump($printerStatusObject);
+
+if ($printerStatusObject->state->flags->printing === true) {
+	echo sprintf('Printing %d%% Time left %d min'
+		, round($progressObject->progress->completion)
+		, round($progressObject->progress->printTimeLeft / 60, 2)
+	);
+} else {
+	echo 'is Ready';
+}
