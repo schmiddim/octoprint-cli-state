@@ -1,13 +1,9 @@
 #!/usr/bin/php
 <?php
 
-/*
- * Documentation:
- * http://docs.octoprint.org/en/master/api/job.html#retrieve-information-about-the-current-job
-*/
-
 /**
  * @param String $url
+ * @return String object
  */
 function doApiRequest($requestUrl) {
 
@@ -24,8 +20,10 @@ function doApiRequest($requestUrl) {
 }
 
 /**
+ * @see http://docs.octoprint.org/en/master/api/printer.html#retrieve-the-current-printer-state
  * @param String $url
  * @param String $apiKey
+ * @return stdClass object
  */
 function getPrinterStatus($url, $apiKey) {
 
@@ -38,6 +36,7 @@ function getPrinterStatus($url, $apiKey) {
  * @see http://docs.octoprint.org/en/master/api/job.html#retrieve-information-about-the-current-job
  * @param String $url
  * @param String $apiKey
+ * @return stdClass object
  */
 function getPrinterProgress($url, $apiKey) {
 
