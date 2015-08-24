@@ -29,7 +29,11 @@ function getPrinterStatus($url, $apiKey) {
 
 	$requestUrl = $url . 'api/printer?history=true&limit=1&apikey=' . $apiKey;
 	$response = doApiRequest($requestUrl);
-	return json_decode($response);
+	$jsonResponse= json_decode($response);
+	if(null === $jsonResponse) {
+		die($response);
+	}
+	return $jsonResponse;
 }
 
 /**
