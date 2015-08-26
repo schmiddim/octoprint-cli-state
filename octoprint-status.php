@@ -68,8 +68,8 @@ $progressObject = getPrinterProgress($url, $apiKey);
 $printerStatusObject = getPrinterStatus($url, $apiKey);
 
 
-var_dump($progressObject);
-var_dump($printerStatusObject);
+//var_dump($progressObject);
+//var_dump($printerStatusObject);
 $temperatures = sprintf('B %d°C E %d°C'
 	, $printerStatusObject->temperature->bed->actual
 	, $printerStatusObject->temperature->tool0->actual);
