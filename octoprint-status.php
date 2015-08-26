@@ -29,8 +29,8 @@ function getPrinterStatus($url, $apiKey) {
 
 	$requestUrl = $url . 'api/printer?history=true&limit=1&apikey=' . $apiKey;
 	$response = doApiRequest($requestUrl);
-	$jsonResponse= json_decode($response);
-	if(null === $jsonResponse) {
+	$jsonResponse = json_decode($response);
+	if (null === $jsonResponse) {
 		die($response);
 	}
 	return $jsonResponse;
@@ -48,8 +48,6 @@ function getPrinterProgress($url, $apiKey) {
 	$response = doApiRequest($requestUrl);
 	return json_decode($response);
 }
-
-
 
 
 $longOps = array('url:', 'apikey:');
@@ -72,12 +70,16 @@ $printerStatusObject = getPrinterStatus($url, $apiKey);
 
 //var_dump($progressObject);
 //var_dump($printerStatusObject);
+$temperatures = sprintf('B %d°C E %d°C'
+	, $printerStatusObject->temperature->bed->actual
+	, $printerStatusObject->temperature->tool0->actual);
 
 if ($printerStatusObject->state->flags->printing === true) {
-	echo sprintf('Printing %d%% Time left %d min'
+	echo sprintf('Printing %d%% Time left %d min %s'
 		, round($progressObject->progress->completion)
 		, round($progressObject->progress->printTimeLeft / 60, 2)
+		, $temperatures
 	);
 } else {
-	echo 'is Ready';
+	echo 'Ready ' . $temperatures;
 }
